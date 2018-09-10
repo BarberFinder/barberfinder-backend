@@ -53,7 +53,7 @@ Before that, make sure you have installed packages ```sequelize``` and ```sequel
 Install the packages
 
 ```javascript
-npm i --save sequelize sequelize-cli
+npm i -g sequelize sequelize-cli
 ```
 
 Run migration:
