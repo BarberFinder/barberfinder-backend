@@ -20,8 +20,20 @@ module.exports = {
 			email: {
 				type: Sequelize.STRING
 			},
+			password: {
+				type: Sequelize.STRING
+			},
 			phone: {
 				type: Sequelize.STRING
+			},
+			facebookId: {
+				type: Sequelize.TEXT
+			},
+			googleId: {
+				type: Sequelize.TEXT
+			},
+			birthday: {
+				type: Sequelize.DATEONLY
 			}
 		});
 	},

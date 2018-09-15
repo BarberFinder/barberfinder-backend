@@ -14,11 +14,23 @@ module.exports = {
 			address: {
 				type: Sequelize.STRING
 			},
+			tagline: {
+				type: Sequelize.STRING
+			},
 			city: {
 				type: Sequelize.STRING
 			},
 			status: {
 				type: Sequelize.BOOLEAN
+			},
+			user_id: {
+				type: Sequelize.INTEGER,
+				references: {
+					model: 'user',
+					key: 'id'
+				},
+				onUpdate: 'cascade',
+				onDelete: 'cascade'
 			}
 		});
 	},
