@@ -4,8 +4,6 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import logger from 'morgan';
 
-import indexRouter from './app/routes/index';
-import usersRouter from './app/routes/users';
 import signupRouter from './app/routes/signup';
 import authRouter from './app/routes/auth';
 import cors from 'cors';
