@@ -1,6 +1,6 @@
 'use strict';
 
-import Model from '../models';
+import model from '../models';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -12,7 +12,7 @@ const SignupController = {
 		const email = user.email;
 		const salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
 
-		Model.user
+		model.user
 			.findOrCreate({
 				where: { email: email },
 				defaults: {

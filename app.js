@@ -6,6 +6,7 @@ import logger from 'morgan';
 
 import signupRouter from './app/routes/signup';
 import authRouter from './app/routes/auth';
+import barberRouter from './app/routes/barber';
 import cors from 'cors';
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/signup', signupRouter);
 app.use('/auth', authRouter);
+app.use('/barber', barberRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
