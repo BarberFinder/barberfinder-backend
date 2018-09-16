@@ -6,5 +6,6 @@ import authHelper from '../middleware/auth';
 
 const router = express.Router();
 router.post('/create', authHelper.isAuthenticated, BarberController.create);
+router.get('/', authHelper.isAuthenticated, BarberController.get);
 
 module.exports = router;

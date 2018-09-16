@@ -3,6 +3,12 @@ module.exports = (sequelize, DataTypes) => {
 	const Barbershop_Operating_Hours = sequelize.define(
 		'barbershop_operating_hours',
 		{
+			id: {
+				type: DataTypes.INTEGER,
+				primaryKey: true,
+				autoIncrement: true,
+				allowNull: false
+			},
 			day: DataTypes.INTEGER,
 			open_hour: DataTypes.TIME,
 			close_hour: DataTypes.TIME,

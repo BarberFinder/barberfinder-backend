@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		{
 			tableName: 'barbershop_images',
-			timeStamps: false
+			timestamps: false
 		}
 	);
 	Barbershop_Image.associate = function(models) {
