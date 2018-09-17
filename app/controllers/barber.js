@@ -4,6 +4,9 @@ import model from '../models';
 import sequelize from '../connection/sequelize';
 import tokenHelper from '../helpers/token';
 import barberHelper from '../helpers/barber';
+import Sequelize from 'sequelize';
+
+const Op = Sequelize.Op;
 
 const BarberController = {
 	create: (req, res, next) => {
@@ -24,6 +27,7 @@ const BarberController = {
 								address: data.address,
 								tagline: data.tagline,
 								city: data.city,
+								phone: data.phone,
 								status: true,
 								user_id: user_id
 							},
@@ -64,9 +68,10 @@ const BarberController = {
 			}
 			if (user_id > 0) {
 				model.barbershop
-					.findAll({
+					.find({
 						where: {
-							user_id: user_id
+							user_id: user_id,
+							status: true
 						},
 						include: [
 							{
@@ -76,7 +81,7 @@ const BarberController = {
 							},
 							{
 								model: model.barbershop_operating_hours,
-								as: 'operating_hours',
+								as: 'operation_hours',
 								attributes: [ 'id', 'day', 'open_hour', 'close_hour' ]
 							}
 						]
@@ -97,6 +102,33 @@ const BarberController = {
 				message: error
 			});
 		}
+	},
+	getBarberShopList: (req, res, next) => {
+		try {
+			const token = tokenHelper.getToken(req);
+			let user_id = 0;
+			if (token) {
+				user_id = tokenHelper.getUserIdByToken(token);
+			}
+			model.barbershop
+				.findAll({
+					where: {
+						user_id: {
+							[Op.not]: user_id
+						}
+					}
+				})
+				.then((barbers) => {
+					res.json({
+						data: barbers
+					});
+				})
+				.catch((err) => {
+					res.json({
+						data: err
+					});
+				});
+		} catch (error) {}
 	}
 };
 

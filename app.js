@@ -4,7 +4,6 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import logger from 'morgan';
 
-import signupRouter from './app/routes/signup';
 import authRouter from './app/routes/auth';
 import barberRouter from './app/routes/barber';
 import cors from 'cors';
@@ -21,7 +20,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use('/signup', signupRouter);
 app.use('/auth', authRouter);
 app.use('/barber', barberRouter);
 

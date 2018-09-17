@@ -12,9 +12,11 @@ module.exports = (sequelize, DataTypes) => {
 			name: DataTypes.STRING,
 			address: DataTypes.STRING,
 			city: DataTypes.STRING,
+			phone: DataTypes.STRING,
 			status: DataTypes.BOOLEAN,
 			tagline: DataTypes.STRING,
-			user_id: DataTypes.INTEGER
+			user_id: DataTypes.INTEGER,
+			image: DataTypes.STRING
 		},
 		{
 			tableName: 'barbershop',
@@ -23,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 	);
 	Barbershop.associate = function(models) {
 		Barbershop.hasMany(models.barbershop_services, { as: 'services', foreignKey: 'barbershop_id' });
-		Barbershop.hasMany(models.barbershop_operating_hours, { as: 'operating_hours', foreignKey: 'barbershop_id' });
+		Barbershop.hasMany(models.barbershop_operating_hours, { as: 'operation_hours', foreignKey: 'barbershop_id' });
 	};
 	return Barbershop;
 };
