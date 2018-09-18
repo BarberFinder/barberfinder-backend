@@ -2,13 +2,11 @@ const barberHelper = {
 	handleServices: (services, barber) => {
 		let newServices = [];
 		services.map((service) => {
-			if (service.service_name.length > 0 && service.service_price.length > 0) {
-				newServices.push({
-					service_name: service.service_name,
-					price: service.service_price,
-					barbershop_id: barber.id
-				});
-			}
+			newServices.push({
+				service_name: service.service_name,
+				price: service.service_price,
+				barbershop_id: barber.id
+			});
 		});
 		return newServices;
 	},

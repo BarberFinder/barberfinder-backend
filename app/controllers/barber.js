@@ -5,6 +5,8 @@ import sequelize from '../connection/sequelize';
 import tokenHelper from '../helpers/token';
 import barberHelper from '../helpers/barber';
 import Sequelize from 'sequelize';
+import upload from '../middleware/barber';
+import fs from 'fs';
 
 const Op = Sequelize.Op;
 
@@ -59,7 +61,7 @@ const BarberController = {
 			});
 		}
 	},
-	get: (req, res, next) => {
+	getBarberShopByUserId: (req, res, next) => {
 		try {
 			const token = tokenHelper.getToken(req);
 			let user_id = 0;
@@ -129,6 +131,108 @@ const BarberController = {
 					});
 				});
 		} catch (error) {}
+	},
+	getBarberShopById: (req, res, next) => {
+		const barbershopId = req.params.barbershopId;
+		try {
+			model.barbershop
+				.find({
+					where: {
+						id: barbershopId,
+						status: true
+					},
+					include: [
+						{
+							model: model.barbershop_services,
+							as: 'services',
+							attributes: [ 'id', 'service_name', 'price' ]
+						},
+						{
+							model: model.barbershop_operating_hours,
+							as: 'operation_hours',
+							attributes: [ 'id', 'day', 'open_hour', 'close_hour' ]
+						}
+					]
+				})
+				.then((barber) => {
+					res
+						.json({
+							data: barber
+						})
+						.catch((err) => {
+							res.json({
+								data: err
+							});
+						});
+				});
+		} catch (error) {
+			console.log(error);
+		}
+	},
+	changeImage: (req, res, next) => {
+		const token = tokenHelper.getToken(req);
+		const user_id = tokenHelper.getUserIdByToken(token);
+		try {
+			upload(req, res, (err) => {
+				if (err) {
+					res.json({
+						message: err,
+						status: 'error'
+					});
+				} else {
+					if (req.file == undefined) {
+						res.json({
+							message: 'Error: No File Selected!',
+							status: 'error'
+						});
+					} else {
+						let newFile = `images/${req.file.filename}`;
+						model.barbershop
+							.findOne({
+								where: {
+									user_id: user_id
+								}
+							})
+							.then((barbershop) => {
+								if (barbershop) {
+									if (barbershop.image !== null) {
+										let previousProfileImage = `${process.env.IMAGE_FOLDER}/${barbershop.image}`;
+										if (fs.existsSync(previousProfileImage)) {
+											fs.unlinkSync(previousProfileImage);
+										}
+									}
+									barbershop
+										.update({
+											image: newFile
+										})
+										.then((updated_barbershop) => {
+											res.json({
+												barber: updated_barbershop,
+												message: 'update success',
+												status: 'succces'
+											});
+										})
+										.catch((err) => {
+											res.json({
+												message: err,
+												status: 'failed'
+											});
+										});
+								}
+							})
+							.catch((err) => {
+								res.json({
+									err: err
+								});
+							});
+					}
+				}
+			});
+		} catch (error) {
+			res.json({
+				data: error
+			});
+		}
 	}
 };
 

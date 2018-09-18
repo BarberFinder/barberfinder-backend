@@ -3,10 +3,12 @@ import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
 import logger from 'morgan';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import busboy from 'connect-busboy';
 
 import authRouter from './app/routes/auth';
 import barberRouter from './app/routes/barber';
-import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,10 +17,13 @@ const PORT = process.env.PORT || 3000;
 app.set('views', path.join(__dirname, './app/views'));
 app.set('view engine', 'ejs');
 
+app.use(busboy());
+app.use(cookieParser());
 app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, './app/public')));
 
 app.use('/auth', authRouter);
 app.use('/barber', barberRouter);
