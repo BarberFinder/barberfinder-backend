@@ -5,7 +5,6 @@ import bodyParser from 'body-parser';
 import logger from 'morgan';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import busboy from 'connect-busboy';
 
 import authRouter from './app/routes/auth';
 import barberRouter from './app/routes/barber';
@@ -17,7 +16,6 @@ const PORT = process.env.PORT || 3000;
 app.set('views', path.join(__dirname, './app/views'));
 app.set('view engine', 'ejs');
 
-app.use(busboy());
 app.use(cookieParser());
 app.use(cors());
 app.use(logger('dev'));

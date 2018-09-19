@@ -4,7 +4,6 @@ import path from 'path';
 const storage = multer.diskStorage({
 	destination: './app/public/images/',
 	filename: (req, file, cb) => {
-		console.log(file);
 		cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
 	}
 });
@@ -15,7 +14,7 @@ const upload = multer({
 	fileFilter: (req, file, cb) => {
 		checkFileType(file, cb);
 	}
-}).single('profile_image');
+});
 
 const checkFileType = (file, cb) => {
 	// Allowed ext

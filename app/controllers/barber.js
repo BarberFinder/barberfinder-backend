@@ -12,14 +12,18 @@ const Op = Sequelize.Op;
 
 const BarberController = {
 	create: (req, res, next) => {
-		const token = tokenHelper.getToken(req);
-		const user_id = tokenHelper.getUserIdByToken(token);
-		const data = req.body.data;
-		const services = data.services;
-		const operation_hours = data.operation_hours;
-
-		let barbershop = '';
 		try {
+			const token = tokenHelper.getToken(req);
+			const user_id = tokenHelper.getUserIdByToken(token);
+			const stringData = req.body.data;
+			const data = JSON.parse(stringData);
+			const services = data.services;
+			const operation_hours = data.operation_hours;
+			let barbershop = '';
+			let newFile = '';
+			if (req.file !== undefined) {
+				newFile = `images/${req.file.filename}`;
+			}
 			sequelize
 				.transaction((t) => {
 					return model.barbershop
@@ -31,15 +35,16 @@ const BarberController = {
 								city: data.city,
 								phone: data.phone,
 								status: true,
-								user_id: user_id
+								user_id: user_id,
+								image: newFile
 							},
 							{ transaction: t }
 						)
 						.then((barber) => {
 							let newServices = barberHelper.handleServices(services, barber);
 							let newOperationHours = barberHelper.handleOperationHours(operation_hours, barber);
-							model.barbershop_services.bulkCreate(newServices), { transaction: t };
-							model.barbershop_operating_hours.bulkCreate(newOperationHours), { transaction: t };
+							model.barbershop_services.bulkCreate(newServices, { transaction: t });
+							model.barbershop_operating_hours.bulkCreate(newOperationHours, { transaction: t });
 							barbershop = barber;
 						});
 				})
@@ -114,11 +119,24 @@ const BarberController = {
 			}
 			model.barbershop
 				.findAll({
+					limit: 10,
 					where: {
 						user_id: {
 							[Op.not]: user_id
 						}
-					}
+					},
+					include: [
+						{
+							model: model.barbershop_services,
+							as: 'services',
+							attributes: [ 'id', 'service_name', 'price' ]
+						},
+						{
+							model: model.barbershop_operating_hours,
+							as: 'operation_hours',
+							attributes: [ 'id', 'day', 'open_hour', 'close_hour' ]
+						}
+					]
 				})
 				.then((barbers) => {
 					res.json({
@@ -130,7 +148,11 @@ const BarberController = {
 						data: err
 					});
 				});
-		} catch (error) {}
+		} catch (error) {
+			res.json({
+				data: error
+			});
+		}
 	},
 	getBarberShopById: (req, res, next) => {
 		const barbershopId = req.params.barbershopId;
@@ -172,65 +194,146 @@ const BarberController = {
 	changeImage: (req, res, next) => {
 		const token = tokenHelper.getToken(req);
 		const user_id = tokenHelper.getUserIdByToken(token);
+		let previousProfileImage = '';
 		try {
-			upload(req, res, (err) => {
-				if (err) {
-					res.json({
-						message: err,
-						status: 'error'
-					});
-				} else {
-					if (req.file == undefined) {
-						res.json({
-							message: 'Error: No File Selected!',
-							status: 'error'
-						});
-					} else {
-						let newFile = `images/${req.file.filename}`;
-						model.barbershop
-							.findOne({
-								where: {
-									user_id: user_id
-								}
-							})
-							.then((barbershop) => {
-								if (barbershop) {
-									if (barbershop.image !== null) {
-										let previousProfileImage = `${process.env.IMAGE_FOLDER}/${barbershop.image}`;
-										if (fs.existsSync(previousProfileImage)) {
-											fs.unlinkSync(previousProfileImage);
-										}
+			if (req.file == undefined) {
+				res.json({
+					message: 'Error: No File Selected!',
+					status: 'error'
+				});
+			} else {
+				let newFile = `images/${req.file.filename}`;
+				model.barbershop
+					.findOne({
+						where: {
+							user_id: user_id
+						}
+					})
+					.then((barbershop) => {
+						if (barbershop) {
+							if (barbershop.image !== null) {
+								previousProfileImage = `${process.env.IMAGE_FOLDER}/${barbershop.image}`;
+							}
+							barbershop
+								.update({
+									image: newFile
+								})
+								.then((updated_barbershop) => {
+									if (fs.existsSync(previousProfileImage)) {
+										fs.unlinkSync(previousProfileImage);
 									}
-									barbershop
-										.update({
-											image: newFile
-										})
-										.then((updated_barbershop) => {
-											res.json({
-												barber: updated_barbershop,
-												message: 'update success',
-												status: 'succces'
-											});
-										})
-										.catch((err) => {
-											res.json({
-												message: err,
-												status: 'failed'
-											});
-										});
-								}
-							})
-							.catch((err) => {
-								res.json({
-									err: err
+									res.json({
+										barber: updated_barbershop,
+										message: 'update success',
+										status: 'succces'
+									});
+								})
+								.catch((err) => {
+									res.json({
+										message: err,
+										status: 'failed'
+									});
 								});
-							});
-					}
-				}
-			});
+						}
+					})
+					.catch((err) => {
+						res.json({
+							err: err
+						});
+					});
+			}
 		} catch (error) {
 			res.json({
 				data: error
+			});
+		}
+	},
+	edit: (req, res, next) => {
+		try {
+			const barbershopId = req.params.barbershopId;
+			const data = JSON.parse(req.body.data);
+			const services = data.services;
+			const operation_hours = data.operation_hours;
+
+			return sequelize
+				.transaction(async (t) => {
+					return await model.barbershop
+						.findOne(
+							{
+								where: {
+									id: barbershopId
+								}
+							},
+							{ transaction: t }
+						)
+						.then(async (barbershop) => {
+							if (barbershop) {
+								await model.barbershop
+									.update(
+										{
+											name: data.name,
+											tagline: data.tagline,
+											phone: data.phone,
+											address: data.address,
+											city: data.city
+										},
+										{
+											where: {
+												id: barbershopId
+											}
+										},
+										{ transaction: t }
+									)
+									.then(() => {
+										model.barbershop_services
+											.destroy(
+												{
+													where: {
+														barbershop_id: barbershopId
+													}
+												},
+												{ transaction: t }
+											)
+											.then(() => {
+												let newServices = barberHelper.handleServices(services, barbershop);
+												model.barbershop_services.bulkCreate(newServices);
+											});
+										model.barbershop_operating_hours
+											.destroy(
+												{
+													where: {
+														barbershop_id: barbershopId
+													}
+												},
+												{ transaction: t }
+											)
+											.then(() => {
+												let newOperationHours = barberHelper.handleOperationHours(
+													operation_hours,
+													barbershop
+												);
+												model.barbershop_operating_hours.bulkCreate(newOperationHours);
+											});
+									});
+							}
+						});
+				})
+				.then((result) => {
+					res.json({
+						message: 'Successfully updated',
+						status: 'success'
+					});
+				})
+				.catch((err) => {
+					res.json({
+						message: 'Fail updated',
+						status: 'failed'
+					});
+				});
+		} catch (error) {
+			res.json({
+				message: error,
+				status: 'failed'
 			});
 		}
 	}
