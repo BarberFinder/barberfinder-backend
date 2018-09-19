@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
 		}
 	);
 	User.associate = function(models) {
-		// associations can be defined here
+		User.hasMany(models.reservation, { as: 'reservations', foreignKey: 'user_id' });
 	};
 	return User;
 };

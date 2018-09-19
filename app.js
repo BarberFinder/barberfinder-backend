@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 
 import authRouter from './app/routes/auth';
 import barberRouter from './app/routes/barber';
+import reservationRouter from './app/routes/reservation';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, './app/public')));
 
 app.use('/auth', authRouter);
 app.use('/barber', barberRouter);
+app.use('/reservation', reservationRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
