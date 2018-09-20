@@ -85,6 +85,7 @@ const BarberController = {
 							user_id: user_id,
 							status: true
 						},
+						limit: 10,
 						include: [
 							{
 								model: model.barbershop_services,
@@ -110,6 +111,7 @@ const BarberController = {
 					});
 			}
 		} catch (error) {
+			console.log(error);
 			res.json({
 				message: error
 			});

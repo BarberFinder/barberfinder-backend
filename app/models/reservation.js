@@ -8,15 +8,6 @@ module.exports = (sequelize, DataTypes) => {
 				primaryKey: true,
 				autoIncrement: true
 			},
-			user_id: {
-				type: DataTypes.INTEGER,
-				allowNull: false,
-				primaryKey: true,
-				references: {
-					model: 'user',
-					key: 'id'
-				}
-			},
 			barbershop_id: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
@@ -44,10 +35,6 @@ module.exports = (sequelize, DataTypes) => {
 		}
 	);
 	Reservation.associate = function(models) {
-		Reservation.belongsTo(models.user, {
-			foreignKey: 'user_id',
-			targetKey: 'id'
-		});
 		Reservation.belongsTo(models.barbershop, {
 			foreignKey: 'barbershop_id',
 			targetKey: 'id'

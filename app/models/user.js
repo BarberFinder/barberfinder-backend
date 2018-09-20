@@ -23,8 +23,6 @@ module.exports = (sequelize, DataTypes) => {
 			timestamps: false
 		}
 	);
-	User.associate = function(models) {
-		User.hasMany(models.reservation, { as: 'reservations', foreignKey: 'user_id' });
-	};
+	User.associate = function(models) {};
 	return User;
 };

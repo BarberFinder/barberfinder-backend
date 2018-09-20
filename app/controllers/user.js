@@ -28,19 +28,20 @@ const UserController = {
 							'birthday',
 							'image'
 						],
-						include: [
-							{
-								model: model.reservation,
-								as: 'reservations',
-								attributes: [ 'barbershop_id', 'reservation_date' ],
-								include: [
-									{
-										model: model.barbershop,
-										attributes: [ 'name', 'address', 'city', 'tagline', 'status', 'phone', 'image' ]
-									}
-								]
-							}
-						]
+						// include: [
+						// 	{
+						// 		model: model.reservation,
+						// 		as: 'reservations',
+						// 		attributes: [ 'id', 'barbershop_id', 'reservation_date' ],
+						// 		include: [
+						// 			{
+						// 				model: model.barbershop,
+						// 				attributes: [ 'name', 'address', 'city', 'tagline', 'status', 'phone', 'image' ]
+						// 			}
+						// 		]
+						// 	}
+						// ],
+						limit: 10
 					})
 					.then((result) => {
 						res.json({
