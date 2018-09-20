@@ -1,12 +1,12 @@
 'use strict';
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		queryInterface.addColumn('barbershop', 'tagline', {
+		queryInterface.addColumn('user', 'image', {
 			type: Sequelize.STRING,
 			allowNull: true
 		});
 	},
 	down: (queryInterface, Sequelize) => {
-		queryInterface.removeColumn('barbershop', 'tagline');
+		queryInterface.removeColumn('user', 'image');
 	}
 };

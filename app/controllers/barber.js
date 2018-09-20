@@ -5,7 +5,6 @@ import sequelize from '../connection/sequelize';
 import tokenHelper from '../helpers/token';
 import barberHelper from '../helpers/barber';
 import Sequelize from 'sequelize';
-import upload from '../middleware/barber';
 import fs from 'fs';
 
 const Op = Sequelize.Op;
@@ -43,8 +42,13 @@ const BarberController = {
 						.then((barber) => {
 							let newServices = barberHelper.handleServices(services, barber);
 							let newOperationHours = barberHelper.handleOperationHours(operation_hours, barber);
-							model.barbershop_services.bulkCreate(newServices, { transaction: t });
-							model.barbershop_operating_hours.bulkCreate(newOperationHours, { transaction: t });
+							model.barbershop_services.bulkCreate(newServices);
+							model.barbershop_operating_hours
+								.bulkCreate(newOperationHours)
+								.then(() => {}, { transaction: t })
+								.catch((err) => {
+									console.log(err);
+								});
 							barbershop = barber;
 						});
 				})
@@ -61,6 +65,7 @@ const BarberController = {
 					});
 				});
 		} catch (error) {
+			console.log(error);
 			res.json({
 				message: error
 			});

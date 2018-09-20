@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
 	Barbershop.associate = function(models) {
 		Barbershop.hasMany(models.barbershop_services, { as: 'services', foreignKey: 'barbershop_id' });
 		Barbershop.hasMany(models.barbershop_operating_hours, { as: 'operation_hours', foreignKey: 'barbershop_id' });
+		Barbershop.hasMany(models.reservation, { as: 'barbershop_reservations', foreignKey: 'barbershop_id' });
 	};
 	return Barbershop;
 };
