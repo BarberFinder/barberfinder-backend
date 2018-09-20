@@ -12,9 +12,11 @@ const UserController = {
 				user_id = tokenHelper.getUserIdByToken(token);
 			}
 
+			console.log(user_id);
+
 			if (user_id > 0) {
 				model.user
-					.find({
+					.findOne({
 						where: {
 							id: user_id
 						},
@@ -27,21 +29,7 @@ const UserController = {
 							'phone',
 							'birthday',
 							'image'
-						],
-						// include: [
-						// 	{
-						// 		model: model.reservation,
-						// 		as: 'reservations',
-						// 		attributes: [ 'id', 'barbershop_id', 'reservation_date' ],
-						// 		include: [
-						// 			{
-						// 				model: model.barbershop,
-						// 				attributes: [ 'name', 'address', 'city', 'tagline', 'status', 'phone', 'image' ]
-						// 			}
-						// 		]
-						// 	}
-						// ],
-						limit: 10
+						]
 					})
 					.then((result) => {
 						res.json({

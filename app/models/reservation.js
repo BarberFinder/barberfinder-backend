@@ -43,6 +43,11 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: 'status',
 			targetKey: 'id'
 		});
+		Reservation.belongsToMany(models.user, {
+			through: 'reservation_user',
+			foreignKey: 'reservation_id',
+			otherKey: 'user_id'
+		});
 	};
 	return Reservation;
 };

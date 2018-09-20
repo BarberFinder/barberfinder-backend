@@ -124,37 +124,66 @@ const BarberController = {
 			if (token) {
 				user_id = tokenHelper.getUserIdByToken(token);
 			}
-			model.barbershop
-				.findAll({
-					limit: 10,
-					where: {
-						user_id: {
-							[Op.not]: user_id
-						}
-					},
-					include: [
-						{
-							model: model.barbershop_services,
-							as: 'services',
-							attributes: [ 'id', 'service_name', 'price' ]
+			if (user_id > 0) {
+				model.barbershop
+					.findAll({
+						limit: 10,
+						where: {
+							user_id: {
+								[Op.not]: user_id
+							}
 						},
-						{
-							model: model.barbershop_operating_hours,
-							as: 'operation_hours',
-							attributes: [ 'id', 'day', 'open_hour', 'close_hour' ]
-						}
-					]
-				})
-				.then((barbers) => {
-					res.json({
-						data: barbers
+						include: [
+							{
+								model: model.barbershop_services,
+								as: 'services',
+								attributes: [ 'id', 'service_name', 'price' ]
+							},
+							{
+								model: model.barbershop_operating_hours,
+								as: 'operation_hours',
+								attributes: [ 'id', 'day', 'open_hour', 'close_hour' ]
+							}
+						]
+					})
+					.then((barbers) => {
+						res.json({
+							data: barbers
+						});
+					})
+					.catch((err) => {
+						res.json({
+							data: err
+						});
 					});
-				})
-				.catch((err) => {
-					res.json({
-						data: err
+			} else {
+				model.barbershop
+					.findAll({
+						limit: 10,
+						include: [
+							{
+								model: model.barbershop_services,
+								as: 'services',
+								attributes: [ 'id', 'service_name', 'price' ]
+							},
+							{
+								model: model.barbershop_operating_hours,
+								as: 'operation_hours',
+								attributes: [ 'id', 'day', 'open_hour', 'close_hour' ]
+							}
+						]
+					})
+					.then((barbers) => {
+						res.json({
+							data: barbers
+						});
+					})
+					.catch((err) => {
+						res.json({
+							data: err
+						});
 					});
-				});
+			}
 		} catch (error) {
 			res.json({
 				data: error

@@ -27,7 +27,8 @@ const ReservationController = {
 							res.json({
 								data: {
 									reservation: reservation_user,
-									status: 'success'
+									status: 'success',
+									isDone: true
 								}
 							});
 						});
@@ -38,6 +39,27 @@ const ReservationController = {
 					});
 				});
 		} catch (error) {}
+	},
+	getReservationByUserId: (req, res, next) => {
+		const token = tokenHelper.getToken(req);
+		const user_id = tokenHelper.getUserIdByToken(token);
+		model.reservation
+			.findAll({
+				include: [
+					{
+						model: model.user,
+						where: {
+							id: user_id
+						},
+						attributes: [ 'first_name', 'last_name', 'email', 'phone' ]
+					}
+				]
+			})
+			.then((reservations) => {
+				res.json({
+					data: reservations
+				});
+			});
 	},
 	getReservationByBarberShopId: (req, res, next) => {
 		const token = tokenHelper.getToken(req);

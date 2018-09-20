@@ -23,6 +23,12 @@ module.exports = (sequelize, DataTypes) => {
 			timestamps: false
 		}
 	);
-	User.associate = function(models) {};
+	User.associate = function(models) {
+		User.belongsToMany(models.reservation, {
+			through: 'reservation_user',
+			foreignKey: 'user_id',
+			otherKey: 'reservation_id'
+		});
+	};
 	return User;
 };
