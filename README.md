@@ -1,66 +1,58 @@
-# Barbershop Finder
+# Barbershop Finder API
 
-## Description
-<p>
-A finder app that will help you find barbershop and make reservation for that. Users also see all information about barbershop, operating hours, everything related to barbershop. Users can reviews and rate them.</p>
+## Tech Stack
+* [**Express**](https://expressjs.com/) Node.js Framework
+* [**Passport**](http://www.passportjs.org/) Authentication
+* [**MySQL**](https://www.mysql.com/) SQL Database
+* [**bcrypt**](https://github.com/kelektiv/node.bcrypt.js) Password hashing function
+* [**Sequelize**](http://docs.sequelizejs.com/) ORM For Node.js
 
-## Main Features :  
-### Users
-1. Login via fb / google / email
-2. Sign up via fb / google / email 
-3. View user profile
-4. Edit user profile
-5. Make a reservation
-6. Reschedule a reservation
-7. Upload payment proof
-8. See reservation history
-7. Review and rate barbershop
-8. Forgot password
+## Preparation
+### Database
+Install `mysql`
 
-### Barbershop
-1. Create barbershop
-6. Edit barbershop  
-7. Create barbershop service price
-8. Edit barbershop service price
-9. Delete barbershop service price
-8. Create barbershop operating hours
-9. Edit barbershop operating hours
-10. Delete barbershop operating hours
-11. Approve the payment
-12. Send voucher to user that has reserved, via email (pdf format)
-13. See booked reservation, filter by date
+## Installation and Configuration
 
-## Tables
-### SQL
-1. User<br>
-** create, read, update, forgot password<br>
-3. Barbershop<br> ** create, read, update
-4. Barbershop service<br> ** create, read, update, delete
-5. Barbershop operating hours <br> ** create, read, update, delete
-6. Barbershop images <br>
-7. Reservation<br> create, update, read
-8. Reservation status
+1. Run: `npm install` to install the dependencies
+2. Create database
+3. Edit .env
+4. Run: `sequelize db:migrate`
+   [**Sequelize Docs**](http://docs.sequelizejs.com/manual/tutorial/migrations.html)
 
-### NO SQL
-1. Review
-2. Comment
+---
+## Running
 
-## Migration
-This section for database migration, add column, remove column, add table, etc. For more detail informations, visit this link http://docs.sequelizejs.com/manual/tutorial/migrations.html.
+### Development
+ Run: `npm run dev` to run server
+### Production
+Run: `npm run start` to run server
 
-Before that, make sure you have installed packages ```sequelize``` and ```sequelize-cli```.<br>
+---
+## API Endpoints
+### Authentication
+`Authorization: Bearer jwt.token.here`
 
-Install the packages
+### `/auth`
+| Endpoint | HTTP | Description | Body | Return |
+|---|---|---|---|---|
+| `/auth/signup` | POST | Sign up | `firstname`, `lastname`,`username`,`email`,`password`,`phone`,`birthday` | [user](#user) |
+| `/auth/login` | POST | Log In | `username`,`password` | [user](#user), [token](#jwt-token) |
 
-```javascript
-npm i -g sequelize sequelize-cli
-```
+### `/user`
+| Endpoint | HTTP | Description | Body | Return |
+|---|---|---|---|---|
+| `/user/` | GET | Get current user data | - | [user](#user)|
 
-Run migration:
-- Move into migration folder
-- Change username, password, database in config.json
-- execute this script
-```javascript
-sequelize db:migrate
-```
+### `/barber`
+| Endpoint | HTTP | Description | Body | Return |
+|---|---|---|---|---|
+| `/barber/` | GET | ... | `edit` | ... |
+| `/barber/list` | GET | Get all barbershops data | `reservation` | - |
+| `/barber/:barbershopId` | GET | Get barbershop data by Id | ... | ... |
+| `/barber/create` | POST | Make a barbershop | `image`,`name`, `tagline`,`phone`,`address`,`city`,`service name`, `operation hours` | - |
+| `/barber/changeImage` | PUT | Change Image | - | - |
 
+### `/reservation`
+| Endpoint | HTTP | Description | Body | Return |
+|---|---|---|---|---|
+| `/reservation/create` | POST | Make a reservation | ... | - |
