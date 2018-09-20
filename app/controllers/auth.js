@@ -52,10 +52,11 @@ const AuthController = {
 				let userProfile = user.get({
 					plain: true
 				});
-
-				const jwtPaylod = { id: userProfile.id };
-				const token = jwt.sign(jwtPaylod, process.env.JWT_SECRET, { expiresIn: '7d' });
-				res.json({ token: token });
+				res.json({
+					data: {
+						message: 'success'
+					}
+				});
 			});
 	},
 	login: async (req, res, next) => {
